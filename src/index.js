@@ -21,29 +21,36 @@ app.ports.fileSelected.subscribe(function (obj) {
       var reader = new FileReader();
       if (fileSize < 3.5) {
         reader.onload = (function (event) {
-          var base64Encoded = event.target.result;
-          var portData = {
-            contents: base64Encoded,
-            fileName: file.name,
-            id: obj.id,
-            totalFiles: files.length
-          };
-          fileArray.push(portData)
+          if (event.target.result.startsWith('data:application/pdf') || event.target.result.startsWith('data:image/png') || event.target.result.startsWith('data:image/jpeg') || event.target.result.startsWith('data:image/gif')) {
+            var base64Encoded = event.target.result;
+            var portData = {
+              contents: base64Encoded,
+              fileName: file.name,
+              id: obj.id,
+              totalFiles: files.length
+            };
+            fileArray.push(portData)
+          }
           if (file == files[files.length - 1]) { app.ports.fileContentRead.send(fileArray); };
+
+
         });
 
       } else {
         reader.onload = (function (event) {
-          var portData = {
-            contents: "",
-            fileName: "Too Big",
-            id: obj.id,
-            totalFiles: files.length
-          };
-          fileArray.push(portData)
+          if (event.target.result.startsWith('data:application/pdf') || event.target.result.startsWith('data:image/png') || event.target.result.startsWith('data:image/jpeg') || event.target.result.startsWith('data:image/gif')) {
+            var portData = {
+              contents: "",
+              fileName: "Too Big",
+              id: obj.id,
+              totalFiles: files.length
+            };
+            fileArray.push(portData)
+          }
           if (file == files[files.length - 1]) { app.ports.fileContentRead.send(fileArray); };
 
         });
+
       }
 
 
